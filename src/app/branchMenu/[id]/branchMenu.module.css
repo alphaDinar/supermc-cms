@@ -1,0 +1,47 @@
+.singleBox{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  width: 200px;
+  padding: 15px;
+  border-radius: 20px;
+}
+
+.singleBox .imgBox{
+  width: 50px;
+  height: 50px;
+  position: relative;
+}
+
+.singleBox .imgBox img{
+  object-fit: contain;
+}
+
+.singleBox p{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.singleBox nav{
+  display: flex;
+  gap: 2rem;
+}
+.singleBox nav svg{
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: white;
+}
+
+.singleBox nav svg:nth-child(1){
+  background: dodgerblue;
+}
+
+.singleBox nav svg:nth-child(2){
+  background: tomato;
+}

@@ -1,0 +1,572 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  scroll-behavior: smooth;
+  font-family: 'Poppins', Arial, sans-serif;
+}
+
+:root {
+  --pass: #0cd570;
+  --theme: #3f4448;
+  --tab: #79B0FF;
+}
+
+
+body {
+  background: #22222E;
+}
+
+body::-webkit-scrollbar {
+  width: 8px;
+  border-radius: 100px;
+  background: #3f4448;
+}
+
+body::-webkit-scrollbar-thumb {
+  border-radius: 100px;
+  background: lightgray;
+}
+
+h3 sub {
+  display: block;
+  width: 50px;
+  height: 3px;
+  background: black;
+}
+
+h5{
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 1.2rem;
+  text-align: center;
+  width: 100%;
+}
+h5 sub {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: black;
+  border-radius: 100px;
+}
+
+main {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  justify-content: flex-end;
+}
+
+.scroll::-webkit-scrollbar, .screen::-webkit-scrollbar {
+  width: 5px;
+  border-radius: 40px;
+  background: #22222E;
+}
+
+.scroll::-webkit-scrollbar-thumb, .screen::-webkit-scrollbar-thumb {
+  background: darkgray;
+  border-radius: 40px;
+}
+
+.screen {
+  width: calc(75% - 20px);
+  padding: calc(5.5vh - 10px) 2.5% 10px 2.5%;
+  height: 91vh;
+  background: white;
+  border-radius: 40px;
+  margin: 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: 0.4s ease;
+  overflow-y: auto;
+}
+
+
+.branch{
+  width: 120px;
+  height: 200px;
+  padding: 20px 30px;
+  border: 1px dotted darkgray;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 140px;
+  align-items: center;
+  gap: 1rem;
+}
+
+.branch .imgBox{
+  position: relative;
+  width: 50px;
+  height: 50px;
+}
+.branch .imgBox img{
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.branch strong{
+  text-align: center;
+}
+
+.branch nav{
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.branch nav svg{
+  padding: 5px;
+  width: 40px;
+  height: 20px;
+  font-size: 1.5rem;
+  border-radius: 40px;
+  color: white;
+}
+
+.branch nav a:nth-child(1) svg{
+  background: salmon;
+}
+.branch nav a:nth-child(2) svg{
+  background: skyblue;
+}
+
+
+.screenHeader{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+}
+.formHeader{
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.formHeader button[type='button'], .screenHeader a{
+  background: tomato;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.formHeader P{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.formHeader p svg{
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.screenHeader, .formHeader {
+  border-bottom: 2px dotted darkgray;
+  padding-bottom: 2.25vh;
+}
+
+.screenHeader>*:nth-child(1) {
+  margin-right: auto;
+}
+
+.screenHeader>*:nth-child(2) {
+  margin: auto;
+}
+
+.screenHeader>*:nth-child(3) {
+  margin-left: auto;
+}
+
+.screenHeader select,
+.screenHeader .searchBox {
+  border: 1px solid darkgray;
+  border-radius: 40px;
+  height: 30px;
+}
+
+.screenHeader select {
+  padding: 2px 5px;
+}
+
+.screenHeader strong, .formHeader strong {
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.screenHeader .searchBox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2px 10px;
+}
+
+.segmentBox{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  gap: 2rem;
+}
+
+.segment{
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.segment .items{
+  display: flex;
+  gap: 1rem 0;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.addBox{
+  width: 200px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  border: 1px solid darkgray;
+  color: black;
+  margin: 0 auto;
+}
+.addBox svg{
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+form{
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+
+}
+
+form div{
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 1fr;
+  max-width: 100%;
+}
+
+form input, form select, form textarea{
+  background: #f1f4f9;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+form input[type='number']::-webkit-inner-spin-button{
+  display: none;
+}
+
+form textarea{
+  height: 100px;
+  resize: none;
+}
+
+form span{
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+form ul{
+  max-width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  list-style: none;
+}
+form ul li{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+form ul li span{
+  font-weight: 400;
+  width: 200px;
+  text-align: center;
+}
+form ul li sup{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+form ul li sup svg{
+  color: tomato;
+}
+
+
+form button{
+  padding: 10px;
+  border-radius: 10px;
+  background: #f6c003;
+  color: #22222E;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sizeBox legend{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.sizeBox sub{
+  background: black;
+  padding: 5px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.sizeBox article{
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.sizeBox article h4{
+  display: flex;
+  align-items: center;
+}
+.sizeBox article h4 span{
+  padding: 5px 10px;
+  display: flex;
+  min-width: 100px;
+  align-items: center;
+  color: white;
+  justify-content: center;
+}
+.sizeBox article h4 span:nth-child(1){
+  background: rgb(58, 50, 39) !important;
+  background: salmon !important;
+  font-weight: 400;
+}
+.sizeBox article h4 span:nth-child(2){
+  border: 1px solid orange;
+  color: black;
+}
+.sizeBox article h4 i{
+  background: tomato;
+  padding: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+
+form div p{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+form div p legend{
+  border: 1px solid darkgray;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+form label {
+  background: dodgerblue;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  color: white;
+}
+
+form input[type='file']{
+  display: none;
+}
+
+.storePreviewBox, .categoryPreviewBox, .bigCategoryPreviewBox{
+  border: 1px solid darkgray;
+  border-radius: 10px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.storePreviewBox{
+  width: 350px;
+  height: 280px;
+}
+
+.categoryPreviewBox{
+  width: 110px;
+  height: 120px;
+}
+
+.bigCategoryPreviewBox{
+  width: 140px;
+  height: 160px;
+}
+
+.screen.change{
+  width: calc(90% - 20px);
+  padding: calc(5.5vh - 10px) 2.5% 10px 2.5%;
+}
+
+.categorySelectBox{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+.categoryStore{
+  padding: 3px 10px;
+  border-radius: 40px;
+  background: dodgerblue;
+  color: white;
+}
+.categoryStore.inactive{
+  background: white;
+  color: dodgerblue;
+  border: 1px dotted dodgerblue;
+}
+
+
+.category{
+  width: 200px;
+  border: 2px dotted darkgray;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-direction: column;
+  padding: 15px;
+}
+
+.category article{
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.category .imgBox, .category .imgBoxBig{
+  position: relative;
+}
+.category .imgBox{
+  width: 50px;
+  height: 50px;
+}
+
+.category .imgBoxBig{
+  width: 100px;
+  height: 100px;
+}
+.category .imgBox img, .category .imgBoxBig img{
+  object-fit: contain;
+}
+
+.category a svg{
+  background: salmon;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.listBox{
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+.listBox li{
+  padding: 10px;
+  border: 1px solid darkgray;
+  border-radius: 10px;
+  list-style: none;
+  display: grid;
+}
+.listBox .rider{
+  grid-template-columns: 50px 1fr 1fr 1fr 100px 100px;
+}
+.listBox li > *{
+  margin: auto;
+}
+.listBox li .imgBox{
+  width: 50px;
+  height: 50px;
+  position: relative;
+  border-radius: 50%;
+}
+
+.listBox li .imgBox img{
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.listBox li legend{
+  color: white;
+  padding: 2px 10px;
+  border-radius: 40px;
+}
+
+.listBox li a svg{
+  background: skyblue;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+
+@media all and (max-width : 1250px){
+  .screen, .screen.change{
+    width: calc(95% - 20px);
+    padding: calc(5.5vh - 10px) 2.5% 10px 2.5%;
+  }
+}
+
+
+@media all and (max-width : 1000px){
+  .screenHeader, .formHeader{
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 0.5rem 0;
+  }
+  .screenHeader > *{
+    margin: auto;
+  }
+}
+
+@media all and (max-width : 500px){
+  .screenHeader, .formHeader{
+    display: grid;
+    grid-template-columns: 1fr;
+    flex-wrap: wrap;
+    gap: 0.5rem 0;
+  }
+}
+
+@media all and (max-width : 450px){
+  form ul{
+    gap: 1rem 0;
+  }
+  form ul li{
+    gap: 0.5rem;
+    border: 1px solid darkgray;
+  }
+  .storePreviewBox{
+    width: 220px;
+    height: 220px;
+  }
+}
