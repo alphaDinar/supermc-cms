@@ -68,12 +68,12 @@ const EditStore = ({ searchParams }: { searchParams: { sid: string } }) => {
         })
     }
 
-    if (Object.keys(logoInfo).length === 0) {
+    if (!logoInfo.size) {
       setIsLoading(true);
       edit(logoPreview);
     } else {
-      if (logoInfo.size > 80000) {
-        alert(`logo size is ${logoInfo.size / 1000}kb, reduce to max of 80kb`);
+      if (logoInfo.size > 150000) {
+        alert(`logo size is ${logoInfo.size / 1000}kb, reduce to max of 150kb`);
       } else {
         const stamp = new Date().getTime();
         setIsLoading(true);
@@ -108,7 +108,7 @@ const EditStore = ({ searchParams }: { searchParams: { sid: string } }) => {
         <section className={'formHeader'}>
           <p>
             <MdArrowBack onClick={() => router.back()} />
-            <strong>Add Store</strong>
+            <strong>Edit Store</strong>
           </p>
           <button type='button' onClick={deleteStore}>Delete</button>
         </section>

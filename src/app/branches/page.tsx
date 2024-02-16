@@ -1,5 +1,4 @@
 'use client'
-import { storeList } from "@/External/lists";
 import { fireStoreDB } from '@/Firebase/Base';
 import Loader from '@/components/Loader/Loader';
 import Sidebar from "@/components/Sidebar/Sidebar";
@@ -15,15 +14,22 @@ import { TbGitBranch } from "react-icons/tb";
 interface Branch extends Record<string, any> { };
 
 const Branches = () => {
+  const [stores, setStores] = useState<Branch[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
 
   useEffect(() => {
+    const getStores = async () => {
+      const storesTemp = await getDocs(collection(fireStoreDB, 'Stores/'));
+      const stores: Branch[] = storesTemp.docs.map((branch) => ({ id: branch.id, ...branch.data() }));
+      setStores(stores);
+    }
+    getStores();
+
     const getBranches = async () => {
       const branchesTemp = await getDocs(collection(fireStoreDB, 'Branches/'));
       const branches: Branch[] = branchesTemp.docs.map((branch) => ({ id: branch.id, ...branch.data() }));
       setBranches(branches);
     }
-
     getBranches();
   }, [])
 
@@ -35,7 +41,7 @@ const Branches = () => {
         <header className={'screenHeader'}>
           <select>
             <option hidden>Select store</option>
-            {storeList.map((store, i) => (
+            {stores.map((store, i) => (
               <option value="store" key={i}>{store.name}</option>
             ))}
           </select>
@@ -53,11 +59,11 @@ const Branches = () => {
               <MdAdd />
               <TbGitBranch />
             </Link>
-            {storeList.map((store, i) => (
+            {stores.map((store, i) => (
               <section key={i} className={'segment'}>
                 <h5>{store.name} <sub></sub></h5>
                 <section className={'items'}>
-                  {branches.filter((branch) => branch.storeId === store.name).map((branch, i) => (
+                  {branches.filter((branch) => branch.storeId === store.id).map((branch, i) => (
                     <div className={'branch'} key={i}>
                       <div className={'imgBox'}>
                         <Image alt='' fill sizes='1' src={store.logo} />
@@ -65,7 +71,7 @@ const Branches = () => {
                       <strong>{branch.location}</strong>
                       <nav>
                         <Link href={`/branchMenu/${branch.id}`}><MdLocalDining style={{ background: store.theme }} /></Link>
-                        <Link href={{pathname : '/editBranch', query : {bid : branch.id}}}><MdEdit /></Link>
+                        <Link href={{ pathname: '/editBranch', query: { bid: branch.id } }}><MdEdit /></Link>
                       </nav>
                     </div>
                   ))

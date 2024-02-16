@@ -13,7 +13,9 @@ interface defType extends Record<string, any> { };
 const AddStore = () => {
   const router = useRouter();
   const [name, setName] = useState('');
-  const [counter, setCounter] = useState('');
+  const [counter, setCounter] = useState(0);
+  const [theme, setTheme] = useState('');
+  const [secondary, setSecondary] = useState('');
   const [logo, setLogo] = useState<Blob>(new Blob);
   const [logoInfo, setLogoInfo] = useState<defType>({});
   const [logoPreview, setLogoPreview] = useState('');
@@ -44,83 +46,99 @@ const AddStore = () => {
 
   const clearForm = () => {
     setName('');
-    setCounter('');
+    setCounter(0);
+    setTheme('');
+    setSecondary('');
     setCategoryList([]);
     setLogoPreview('');
   }
 
   const createStore = () => {
-    
-    if (logoInfo.size > 80000) {
-      alert(`logo size is ${logoInfo.size / 1000}kb, reduce to max of 80kb`);
-    } else {
-      const stamp = new Date().getTime();
-      setIsLoading(true);
-      uploadBytes(storageRef(storageDB, 'Stores/' + `${logoInfo.name}${stamp}`), logo)
-        .then((res) => {
-          getDownloadURL(res.ref)
-            .then((url) => {
-              setDoc(doc(fireStoreDB, 'Stores/' + name), {
-                name: name,
-                logo: url,
-                categoryList: categoryList,
-                counter: counter,
-                timestamp: stamp
-              })
-                .then(() => {
-                  clearForm();
-                  alert('completed');
-                  setIsLoading(false);
+    if (theme[0] != '#', secondary[0] != '#') {
+      alert(`Enter valid hex color`);
+    }
+    else {
+      if (logoInfo.size > 150000) {
+        alert(`logo size is ${logoInfo.size / 1000}kb, reduce to max of 150kb`);
+      } else {
+        const stamp = new Date().getTime();
+        setIsLoading(true);
+        uploadBytes(storageRef(storageDB, 'Stores/' + `${logoInfo.name}${stamp}`), logo)
+          .then((res) => {
+            getDownloadURL(res.ref)
+              .then((url) => {
+                setDoc(doc(fireStoreDB, 'Stores/' + name), {
+                  name: name,
+                  logo: url,
+                  categoryList: categoryList,
+                  counter: counter,
+                  theme: theme,
+                  secondary: secondary,
+                  timestamp: stamp
                 })
-            }
-            )
-        })
+                  .then(() => {
+                    clearForm();
+                    alert('completed');
+                    setIsLoading(false);
+                  })
+              }
+              )
+          })
       }
     }
-
-    return (
-      <main>
-        <Sidebar />
-
-        <Screen>
-          <section className={'formHeader'}>
-            <p>
-              <MdArrowBack onClick={() => router.back()} />
-              <strong>Add Store</strong>
-            </p>
-          </section>
-
-          {isLoading ?
-            <Loader />
-            :
-            <form onSubmit={(e) => { e.preventDefault(), createStore() }}>
-              <div>
-                <span>Name *</span>
-                <input type="text" value={name} onChange={(e) => { setName(e.target.value) }} required />
-              </div>
-              <div>
-                <span>Counter *</span>
-                <input type="number" value={counter} onChange={(e) => { setCounter(e.target.value) }} required />
-              </div>
-              <div className="categorySelectBox">
-                {categories.map((cat, i) => (
-                  <legend onClick={() => toggleCat(cat.id.toString())} className={categoryList.includes(cat.id) ? "categoryStore" : 'categoryStore inactive'} key={i}>{cat.name}</legend>
-                ))}
-              </div>
-              <div>
-                <span>Logo *</span>
-                <label htmlFor="addImage">
-                  Add Logo
-                  <input id="addImage" type="file" onChange={(e) => { setLogo(e.target.files![0]), setLogoInfo(e.target.files![0]), setLogoPreview(URL.createObjectURL(e.target.files![0])) }} required />
-                </label>
-              </div>
-              <div className="storePreviewBox" style={{ backgroundImage: `url(${logoPreview})` }}></div>
-              <button type="submit">Create Store</button>
-            </form>
-          }
-        </Screen>
-      </main>
-    );
   }
 
-  export default AddStore;
+  return (
+    <main>
+      <Sidebar />
+
+      <Screen>
+        <section className={'formHeader'}>
+          <p>
+            <MdArrowBack onClick={() => router.back()} />
+            <strong>Add Store</strong>
+          </p>
+        </section>
+
+        {isLoading ?
+          <Loader />
+          :
+          <form onSubmit={(e) => { e.preventDefault(), createStore() }}>
+            <div>
+              <span>Name *</span>
+              <input type="text" value={name} onChange={(e) => { setName(e.target.value) }} required />
+            </div>
+            <div>
+              <span>Priority *</span>
+              <input min={0} type="number" value={counter} onChange={(e) => { setCounter(parseInt(e.target.value)) }} required />
+            </div>
+            <div>
+              <span>Theme Color *</span>
+              <input type="text" value={theme} onChange={(e) => { setTheme(e.target.value) }} placeholder="copy and paste hex color, eg : #32a852" required />
+            </div>
+            <div>
+              <span>Secondary Color *</span>
+              <input type="text" value={secondary} onChange={(e) => { setSecondary(e.target.value) }} placeholder="copy and paste hex color, eg : #32a852" required />
+            </div>
+            <div className="categorySelectBox">
+              {categories.map((cat, i) => (
+                <legend onClick={() => toggleCat(cat.id.toString())} className={categoryList.includes(cat.id) ? "categoryStore" : 'categoryStore inactive'} key={i}>{cat.name}</legend>
+              ))}
+            </div>
+            <div>
+              <span>Logo *</span>
+              <label htmlFor="addImage">
+                Add Logo
+                <input id="addImage" type="file" onChange={(e) => { setLogo(e.target.files![0]), setLogoInfo(e.target.files![0]), setLogoPreview(URL.createObjectURL(e.target.files![0])) }} required />
+              </label>
+            </div>
+            <div className="storePreviewBox" style={{ backgroundImage: `url(${logoPreview})` }}></div>
+            <button type="submit">Create Store</button>
+          </form>
+        }
+      </Screen>
+    </main>
+  );
+}
+
+export default AddStore;

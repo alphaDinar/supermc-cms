@@ -42,10 +42,7 @@ const AddBranch = () => {
       const key = `${store}, ${location}`;
       setDoc(doc(fireStoreDB, 'Branches/' + bid), {
         key : key,
-        store: selectedStore.name,
         storeId: store,
-        counter: selectedStore.counter,
-        logo: selectedStore.logo,
         address: address,
         location: location,
         timestamp: stamp

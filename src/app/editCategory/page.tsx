@@ -26,6 +26,7 @@ const EditCategory = ({ searchParams }: { searchParams: { cid: string } }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     getDoc(doc(fireStoreDB, 'Categories/' + searchParams.cid))
       .then((categoryObj) => {
         if (categoryObj.exists()) {
@@ -39,9 +40,10 @@ const EditCategory = ({ searchParams }: { searchParams: { cid: string } }) => {
   }, [])
 
 
-  const createCategory = async () => {
-    const add = (url: string, bigUrl: string, stamp: number) => {
-      setDoc(doc(fireStoreDB, 'Categories/' + name), {
+  const editCategory = async () => {
+    setIsLoading(true);
+    const edit = async (url: string, bigUrl: string, stamp: number) => {
+      await setDoc(doc(fireStoreDB, 'Categories/' + name), {
         name: name,
         img: url,
         bigImg: bigUrl,
@@ -56,47 +58,37 @@ const EditCategory = ({ searchParams }: { searchParams: { cid: string } }) => {
     let url = imagePreview;
     let bigUrl = bigImagePreview;
     const stamp = new Date().getTime();
-    // add(url, bigUrl, stamp)
 
-    // console.log(bigImageInfo.size > 80000)
-    
-    
-    // if (Object.keys(imageInfo).length != 0) {
-      //   if (imageInfo.size > 80000) {
-        //     alert(`image size is ${imageInfo.size / 1000}kb, reduce to max of 80kb`);
-    //   } else {
-      //     await uploadBytes(storageRef(storageDB, 'Stores/' + `${imageInfo.name}${stamp}`), image)
-      //       .then(async (res) => {
-        //         await getDownloadURL(res.ref)
-        //           .then((urlRes) => {
-    //             url = urlRes;
-    //           }
-    //           )
-    //       })
-    //   }
-    // }
-    
-    console.log(bigImageInfo);
-    console.log(Object.keys(bigImageInfo))
-    if (Object.keys(bigImageInfo).length != 0) {
-      console.log(bigImageInfo.size)
-      if (bigImageInfo.size > 80000) {
-        alert(`Thumbnail(big) size is ${imageInfo.size / 1000}kb, reduce to max of 80kb`);
+    if (imageInfo.size) {
+      if (imageInfo.size > 150000) {
+        setIsLoading(false);
+        alert(`Thumbnail(big) size is ${imageInfo.size / 1000}kb, reduce to max of 150kb`);
       } else {
-        await uploadBytes(storageRef(storageDB, 'Stores/' + `${bigImageInfo.name}${stamp}`), bigImage)
-          .then(async (bigRes) => {
-            await getDownloadURL(bigRes.ref)
+        await uploadBytes(storageRef(storageDB, 'Categories/' + `${bigImageInfo.name}${stamp}`), image)
+          .then((res) => {
+            getDownloadURL(res.ref)
+              .then((url) => {
+                url = url;
+              })
+          })
+      }
+    }
+    if (bigImageInfo.size) {
+      if (bigImageInfo.size > 150000) {
+        setIsLoading(false);
+        alert(`Thumbnail(big) size is ${imageInfo.size / 1000}kb, reduce to max of 150kb`);
+      } else {
+        await uploadBytes(storageRef(storageDB, 'Categories/' + `${bigImageInfo.name}${stamp}`), bigImage)
+          .then((bigRes) => {
+            getDownloadURL(bigRes.ref)
               .then((bigUrlRes) => {
-                // bigUrl = bigUrlRes;
-              }
-              )
+                bigUrl = bigUrlRes;
+              })
           })
       }
     }
 
-    // console.log(url, 'norm');
-    // console.log(bigUrl, 'big');
-
+    edit(url, bigUrl, stamp);
   }
 
   const deleteCategory = () => {
@@ -117,7 +109,7 @@ const EditCategory = ({ searchParams }: { searchParams: { cid: string } }) => {
         <section className={'formHeader'}>
           <p>
             <MdArrowBack onClick={() => router.back()} />
-            <strong>Add Category</strong>
+            <strong>Edit Category</strong>
           </p>
           <button type='button' onClick={deleteCategory}>Delete</button>
         </section>
@@ -125,7 +117,7 @@ const EditCategory = ({ searchParams }: { searchParams: { cid: string } }) => {
         {isLoading ?
           <Loader />
           :
-          <form onSubmit={(e) => { e.preventDefault(), createCategory() }}>
+          <form onSubmit={(e) => { e.preventDefault(), editCategory() }}>
             <div>
               <span>Name *</span>
               <input type="text" value={name} onChange={(e) => { setName(e.target.value) }} required />
@@ -147,7 +139,7 @@ const EditCategory = ({ searchParams }: { searchParams: { cid: string } }) => {
               </label>
             </div>
             <div className="categoryPreviewBox" style={{ backgroundImage: `url(${imagePreview})` }}></div>
-            <button type="submit">Create Category</button>
+            <button type="submit">Edit Category</button>
           </form>
         }
       </Screen>

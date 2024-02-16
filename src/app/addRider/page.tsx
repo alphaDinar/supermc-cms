@@ -96,8 +96,8 @@ const AddRider = () => {
       }
     }
 
-    if (imageInfo.size > 80000 || IDImageInfo.size > 80000) {
-      alert(`image size is ${imageInfo.size / 1000}kb, ${IDImageInfo.size / 1000}kb, reduce to max of 80kb`);
+    if (imageInfo.size > 150000 || IDImageInfo.size > 150000) {
+      alert(`image size is ${imageInfo.size / 1000}kb, ${IDImageInfo.size / 1000}kb, reduce to max of 150kb`);
     } else {
       const stamp = new Date().getTime();
       setIsLoading(true);

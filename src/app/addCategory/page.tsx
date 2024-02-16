@@ -46,8 +46,8 @@ const AddCategory = () => {
         })
     }
 
-    if (imageInfo.size > 80000 || bigImageInfo.size > 80000) {
-      alert(`image size is ${imageInfo.size / 1000}kb, reduce to max of 80kb`);
+    if (imageInfo.size > 150000 || bigImageInfo.size > 150000) {
+      alert(`image size is ${imageInfo.size / 1000}kb, reduce to max of 150kb`);
     } else {
       const stamp = new Date().getTime();
       setIsLoading(true);

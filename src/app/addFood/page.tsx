@@ -166,8 +166,8 @@ const AddFood = ({ searchParams }: { searchParams: { bid: string } }) => {
     const timestamp = new Date().getTime();
     const fid = `fid${timestamp}`;
 
-    if (imageInfo.size > 80000) {
-      alert(`image size is ${imageInfo.size / 1000}kb, reduce to max of 80kb`);
+    if (imageInfo.size > 150000) {
+      alert(`image size is ${imageInfo.size / 1000}kb, reduce to max of 150kb`);
     } else {
       setIsLoading(true);
       uploadBytes(storageRef(storageDB, 'Stores/' + `${imageInfo.name}${timestamp}`), image)

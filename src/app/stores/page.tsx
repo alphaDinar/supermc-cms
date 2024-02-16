@@ -18,6 +18,7 @@ const Stores = () => {
     const getStores = async () => {
       const storesTemp = await getDocs(collection(fireStoreDB, 'Stores/'));
       const stores: Store[] = storesTemp.docs.map((store) => ({ id: store.id, ...store.data() }));
+      const counterList = storesTemp.docs.map((store) => store.data().counter);
       setStores(stores);
     }
 
