@@ -50,8 +50,8 @@ const EditFood = ({ searchParams }: { searchParams: { fid: string } }) => {
   const [isLoading, setIsLoading] = useState(true);
 
 
-  const updateForm = () => {
-    getDoc(doc(fireStoreDB, 'Foods/' + searchParams.fid))
+  const updateForm = (fid: string) => {
+    getDoc(doc(fireStoreDB, 'Foods/' + fid))
       .then((foodObj) => {
         if (foodObj.exists()) {
           const food = foodObj.data();
@@ -92,7 +92,7 @@ const EditFood = ({ searchParams }: { searchParams: { fid: string } }) => {
         setCategories(res.docs.map((doc) => doc.id));
       })
 
-    updateForm();
+    updateForm(searchParams.fid);
   })
 
   const resetForm = () => {
@@ -190,7 +190,7 @@ const EditFood = ({ searchParams }: { searchParams: { fid: string } }) => {
         extraList: finalExtraList,
         img: url,
       }).then(() => {
-        updateForm();
+        updateForm(searchParams.fid);
         setIsLoading(false);
       })
     }
