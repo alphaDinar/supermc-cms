@@ -14,12 +14,14 @@ interface CategoryType extends Record<string, any> { };
 
 const Categories = () => {
   const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     getDocs(collection(fireStoreDB, 'Categories/'))
       .then((res) => {
         const categoriesTemp: CategoryType[] = res.docs.map((cat) => ({ id: cat.id, ...cat.data() }));
         setCategories(categoriesTemp);
+        setIsLoading(false);
       })
 
   }, [])
@@ -42,7 +44,7 @@ const Categories = () => {
         </header>
 
 
-        {categories.length > 0 ?
+        {!isLoading ?
           <section className="segmentBox">
             <Link href={'/addCategory'} className="addBox">
               <MdAdd />

@@ -67,7 +67,7 @@ const AddStore = () => {
           .then((res) => {
             getDownloadURL(res.ref)
               .then((url) => {
-                setDoc(doc(fireStoreDB, 'Stores/' + name), {
+                setDoc(doc(fireStoreDB, 'Stores/' + name.toLowerCase()), {
                   name: name,
                   logo: url,
                   categoryList: categoryList,

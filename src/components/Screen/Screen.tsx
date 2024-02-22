@@ -1,4 +1,4 @@
-import { useSidebarContext } from "@/Providers/sidebarContext";
+import { useSidebarContext } from "@/Providers/SidebarContext";
 import { ReactNode } from "react";
 
 type ScreenProps = {

@@ -16,6 +16,7 @@ interface Branch extends Record<string, any> { };
 const Branches = () => {
   const [stores, setStores] = useState<Branch[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getStores = async () => {
@@ -29,6 +30,7 @@ const Branches = () => {
       const branchesTemp = await getDocs(collection(fireStoreDB, 'Branches/'));
       const branches: Branch[] = branchesTemp.docs.map((branch) => ({ id: branch.id, ...branch.data() }));
       setBranches(branches);
+      setIsLoading(false);
     }
     getBranches();
   }, [])
@@ -53,7 +55,7 @@ const Branches = () => {
           </div>
         </header>
 
-        {branches.length > 0 ?
+        {!isLoading ?
           <section className='segmentBox'>
             <Link href={'/addBranch'} className="addBox">
               <MdAdd />
@@ -70,7 +72,7 @@ const Branches = () => {
                       </div>
                       <strong>{branch.location}</strong>
                       <nav>
-                        <Link href={`/branchMenu/${branch.id}`}><MdLocalDining style={{ background: store.theme }} /></Link>
+                        <Link href={{ pathname: '/branchMenu', query: { branch: JSON.stringify(branch), stores : JSON.stringify(stores) } }}><MdLocalDining style={{ background: store.theme }} /></Link>
                         <Link href={{ pathname: '/editBranch', query: { bid: branch.id } }}><MdEdit /></Link>
                       </nav>
                     </div>
@@ -80,8 +82,7 @@ const Branches = () => {
               </section>
             ))}
           </section>
-          : <Loader />
-        }
+          : <Loader />}
       </Screen>
     </main>
   );

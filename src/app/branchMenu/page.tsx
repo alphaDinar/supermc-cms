@@ -1,5 +1,4 @@
 'use client'
-import { storeList } from "@/External/lists";
 import { fireStoreDB } from "@/Firebase/Base";
 import Loader from "@/components/Loader/Loader";
 import Sidebar from "@/components/Sidebar/Sidebar";
@@ -15,34 +14,24 @@ import Screen from "@/components/Screen/Screen";
 
 interface Branch extends Record<string, any> { };
 
-const BranchMenu = () => {
-  const { id } = useParams();
-  const bid = decodeURIComponent(id.toString());
-  const [branch, setBranch] = useState<Branch>({});
+const BranchMenu = ({ searchParams }: { searchParams: { branch: string, stores: string } }) => {
+  const branch = JSON.parse(searchParams.branch);
+  const store = JSON.parse(searchParams.stores).find((el: Branch) => el.id === branch.storeId);
+  const fullCategoryList : string[] = store.categoryList;
+  const [categoryList, setCategoryList] = useState<string[]>(store.categoryList);
+
+
   const [fullFoodsList, setFullFoodsList] = useState<Branch[]>([]);
   const [foods, setFoods] = useState<Branch[]>([]);
-  const store = storeList.find((store) => store.name == bid.split(',')[0]);
-
-  const [fullCategoryList, setFullCategoryList] = useState<string[]>([]);
-  const [categoryList, setCategoryList] = useState<string[]>([]);
+  const [storeList, setStoreList] = useState<Branch[]>([]);
   const [category, setCategory] = useState<string>('');
 
   useEffect(() => {
-    const getBranch = async () => {
-      const branchTemp = await getDoc(doc(fireStoreDB, 'Branches/' + bid));
-      const updatedBranchTemp: Branch = { id: branchTemp.id, ...branchTemp.data() }
-      console.log(updatedBranchTemp.storeId)
-      const store = (await getDoc(doc(fireStoreDB, 'Stores/' + updatedBranchTemp.storeId))).data();
-      setBranch(updatedBranchTemp);
-      setFullCategoryList(store!.categoryList);
-      setCategoryList(store!.categoryList);
-    }
-    getBranch();
-
     const getFoods = async () => {
-      const foodQuery = query(collection(fireStoreDB, 'Foods/'), where('branch', '==', bid));
+      const foodQuery = query(collection(fireStoreDB, 'Foods/'), where('branch', '==', branch.id));
       const foodsTemp = await getDocs(foodQuery);
       setFullFoodsList(foodsTemp.docs.map((food) => ({ id: food.id, ...food.data() })));
+      console.log(foodsTemp.docs.map((food) => ({ id: food.id, ...food.data() })));
       setFoods(foodsTemp.docs.map((food) => ({ id: food.id, ...food.data() })));
     }
     getFoods();
@@ -77,7 +66,7 @@ const BranchMenu = () => {
               ))
             }
           </select>
-          <strong>{bid} Menu</strong>
+          <strong>{branch.key} Menu </strong>
 
           <div className={'searchBox'}>
             <input type="text" onChange={(e) => { keyWordFilter(e.target.value) }} />
@@ -85,7 +74,7 @@ const BranchMenu = () => {
           </div>
         </header>
 
-        <Link href={{ pathname: '/addFood', query: { bid: bid } }} className="addBox">
+        <Link href={{ pathname: '/addFood', query: { bid: branch.id } }} className="addBox">
           <MdAdd />
           <IoFastFoodOutline />
         </Link>
@@ -99,7 +88,7 @@ const BranchMenu = () => {
                 <section className={'items'}>
                   {foods.length > 0 &&
                     foods.filter((food) => food.category.toLowerCase() === category.toLowerCase()).map((food, fi) => (
-                      <div key={fi} className={styles.singleBox} style={{ background: store?.theme, color: store?.secondary }}>
+                      <div key={fi} className={styles.singleBox} style={{ background: store.theme, color: store.secondary }}>
                         <div className={styles.imgBox}>
                           <Image alt="" fill sizes="1" src={food.img} />
                         </div>

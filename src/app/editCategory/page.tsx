@@ -59,36 +59,48 @@ const EditCategory = ({ searchParams }: { searchParams: { cid: string } }) => {
     let bigUrl = bigImagePreview;
     const stamp = new Date().getTime();
 
-    if (imageInfo.size) {
-      if (imageInfo.size > 150000) {
-        setIsLoading(false);
-        alert(`Thumbnail(big) size is ${imageInfo.size / 1000}kb, reduce to max of 150kb`);
+    const fixImage = async () => {
+      if (imageInfo.size) {
+        if (imageInfo.size > 150000) {
+          setIsLoading(false);
+          alert(`Thumbnail(big) size is ${imageInfo.size / 1000}kb, reduce to max of 150kb`);
+        } else {
+          await uploadBytes(storageRef(storageDB, 'Categories/' + `${bigImageInfo.name}${stamp}`), image)
+            .then((res) => {
+              getDownloadURL(res.ref)
+                .then((resUrl) => {
+                  return resUrl;
+                })
+            })
+        }
       } else {
-        await uploadBytes(storageRef(storageDB, 'Categories/' + `${bigImageInfo.name}${stamp}`), image)
-          .then((res) => {
-            getDownloadURL(res.ref)
-              .then((url) => {
-                url = url;
-              })
-          })
-      }
-    }
-    if (bigImageInfo.size) {
-      if (bigImageInfo.size > 150000) {
-        setIsLoading(false);
-        alert(`Thumbnail(big) size is ${imageInfo.size / 1000}kb, reduce to max of 150kb`);
-      } else {
-        await uploadBytes(storageRef(storageDB, 'Categories/' + `${bigImageInfo.name}${stamp}`), bigImage)
-          .then((bigRes) => {
-            getDownloadURL(bigRes.ref)
-              .then((bigUrlRes) => {
-                bigUrl = bigUrlRes;
-              })
-          })
+        return url;
       }
     }
 
-    edit(url, bigUrl, stamp);
+    const fixBigImage = async () => {
+      if (bigImageInfo.size) {
+        if (bigImageInfo.size > 150000) {
+          setIsLoading(false);
+          alert(`Thumbnail(big) size is ${imageInfo.size / 1000}kb, reduce to max of 150kb`);
+        } else {
+          await uploadBytes(storageRef(storageDB, 'Categories/' + `${bigImageInfo.name}${stamp}`), bigImage)
+            .then((bigRes) => {
+              getDownloadURL(bigRes.ref)
+                .then((bigUrlRes) => {
+                  return bigUrlRes;
+                })
+            })
+        }
+      }else{
+        return bigUrl;
+      }
+    }
+
+    await fixImage;
+    await fixBigImage;
+
+    console.log('sorted');
   }
 
   const deleteCategory = () => {
@@ -120,7 +132,7 @@ const EditCategory = ({ searchParams }: { searchParams: { cid: string } }) => {
           <form onSubmit={(e) => { e.preventDefault(), editCategory() }}>
             <div>
               <span>Name *</span>
-              <input type="text" value={name} onChange={(e) => { setName(e.target.value) }} required />
+              <input type="text" value={name} readOnly onChange={(e) => { setName(e.target.value) }} required />
             </div>
             <div>
               <span>Thumbnail (Big) *</span>

@@ -5,7 +5,7 @@ import { MdMenu, MdPowerSettingsNew, MdStorefront } from 'react-icons/md';
 import { TbGitBranch } from 'react-icons/tb';
 import logo from '../../../public/logo.png';
 import styles from './sidebar.module.css';
-import { useSidebarContext } from '@/Providers/sidebarContext';
+import { useSidebarContext } from '@/Providers/SidebarContext';
 import { BiDish } from 'react-icons/bi';
 import { usePathname } from 'next/navigation';
 import { FaMotorcycle } from 'react-icons/fa';

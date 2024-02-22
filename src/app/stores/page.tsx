@@ -13,6 +13,7 @@ interface Store extends Record<string, any> { };
 
 const Stores = () => {
   const [stores, setStores] = useState<Store[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getStores = async () => {
@@ -20,6 +21,7 @@ const Stores = () => {
       const stores: Store[] = storesTemp.docs.map((store) => ({ id: store.id, ...store.data() }));
       const counterList = storesTemp.docs.map((store) => store.data().counter);
       setStores(stores);
+      setIsLoading(false);
     }
 
     getStores();
@@ -36,7 +38,7 @@ const Stores = () => {
           <span></span>
         </header>
 
-        {stores.length > 0 ?
+        {!isLoading ?
           <section className='segmentBox'>
             <Link href={'/addStore'} className="addBox">
               <MdAdd />
