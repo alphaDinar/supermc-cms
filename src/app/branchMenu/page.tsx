@@ -35,7 +35,7 @@ const BranchMenu = ({ searchParams }: { searchParams: { branch: string, stores: 
       setFoods(foodsTemp.docs.map((food) => ({ id: food.id, ...food.data() })));
     }
     getFoods();
-  }, [])
+  }, [branch.id])
 
   const selectFilter = (val: string) => {
     if (val === 'all') {

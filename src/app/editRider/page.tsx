@@ -44,7 +44,7 @@ const AddRider = ({ searchParams }: { searchParams: { rid: string } }) => {
           setIsLoading(false);
         }
       });
-  }, [])
+  }, [searchParams.rid])
 
 
 

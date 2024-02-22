@@ -42,7 +42,7 @@ const EditStore = ({ searchParams }: { searchParams: { sid: string } }) => {
         const categoryListTemp = res.docs.map((store) => ({ id: store.id, ...store.data() }));
         setCategories(categoryListTemp);
       })
-  }, [])
+  }, [searchParams.sid])
 
   const toggleCat = (id: string) => {
     if (categoryList.includes(id)) {
@@ -134,7 +134,7 @@ const EditStore = ({ searchParams }: { searchParams: { sid: string } }) => {
               <span>Logo *</span>
               <label htmlFor="addImage">
                 Add Logo
-                <input id="addImage" type="file" onChange={(e) => { setLogo(e.target.files![0]), setLogoInfo(e.target.files![0]), setLogoPreview(URL.createObjectURL(e.target.files![0])) }}/>
+                <input id="addImage" type="file" onChange={(e) => { setLogo(e.target.files![0]), setLogoInfo(e.target.files![0]), setLogoPreview(URL.createObjectURL(e.target.files![0])) }} />
               </label>
             </div>
             <div className="storePreviewBox" style={{ backgroundImage: `url(${logoPreview})` }}></div>

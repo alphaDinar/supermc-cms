@@ -93,7 +93,7 @@ const EditFood = ({ searchParams }: { searchParams: { fid: string } }) => {
       })
 
     updateForm();
-  }, [])
+  })
 
   const resetForm = () => {
     setName('');

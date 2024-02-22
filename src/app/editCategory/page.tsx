@@ -37,7 +37,7 @@ const EditCategory = ({ searchParams }: { searchParams: { cid: string } }) => {
           setIsLoading(false);
         }
       });
-  }, [])
+  }, [searchParams.cid])
 
 
   const editCategory = async () => {

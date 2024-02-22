@@ -36,7 +36,7 @@ const EditBranch = ({ searchParams }: { searchParams: { bid: string } }) => {
           setIsLoading(false);
         }
       })
-  }, [])
+  }, [searchParams.bid])
 
   const clearForm = () => {
     setLocation('');
