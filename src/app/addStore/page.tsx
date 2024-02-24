@@ -20,36 +20,13 @@ const AddStore = () => {
   const [logoInfo, setLogoInfo] = useState<defType>({});
   const [logoPreview, setLogoPreview] = useState('');
 
-  const [categoryList, setCategoryList] = useState<string[]>([]);
-  const [categories, setCategories] = useState<defType[]>([]);
-
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    getDocs(collection(fireStoreDB, 'Categories/'))
-      .then((res) => {
-        const categoryListTemp = res.docs.map((store) => ({ id: store.id, ...store.data() }));
-        setCategories(categoryListTemp);
-        setIsLoading(false);
-      })
-  }, [])
-
-  const toggleCat = (id: string) => {
-    if (categoryList.includes(id)) {
-      const catTemp = categoryList.filter((cat) => cat != id);
-      setCategoryList(catTemp);
-    } else {
-      const catTemp = [...categoryList, id];
-      setCategoryList(catTemp);
-    }
-  }
 
   const clearForm = () => {
     setName('');
     setCounter(0);
     setTheme('');
     setSecondary('');
-    setCategoryList([]);
     setLogoPreview('');
   }
 
@@ -70,7 +47,6 @@ const AddStore = () => {
                 setDoc(doc(fireStoreDB, 'Stores/' + name.toLowerCase()), {
                   name: name,
                   logo: url,
-                  categoryList: categoryList,
                   counter: counter,
                   theme: theme,
                   secondary: secondary,
@@ -120,11 +96,7 @@ const AddStore = () => {
               <span>Secondary Color *</span>
               <input type="text" value={secondary} onChange={(e) => { setSecondary(e.target.value) }} placeholder="copy and paste hex color, eg : #32a852" required />
             </div>
-            <div className="categorySelectBox">
-              {categories.map((cat, i) => (
-                <legend onClick={() => toggleCat(cat.id.toString())} className={categoryList.includes(cat.id) ? "categoryStore" : 'categoryStore inactive'} key={i}>{cat.name}</legend>
-              ))}
-            </div>
+
             <div>
               <span>Logo *</span>
               <label htmlFor="addImage">

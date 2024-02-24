@@ -408,6 +408,10 @@ form input[type='file']{
 .storePreviewBox{
   width: 350px;
   height: 280px;
+  position: relative;
+}
+.storePreviewBox img{
+  object-fit: contain;
 }
 
 .categoryPreviewBox{
@@ -429,6 +433,7 @@ form input[type='file']{
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
+  cursor: pointer;
 }
 .categoryStore{
   padding: 3px 10px;
