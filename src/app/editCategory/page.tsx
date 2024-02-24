@@ -19,7 +19,7 @@ const EditCategory = ({ searchParams }: { searchParams: { category: string } }) 
   const [name, setName] = useState(category.name);
   const [store, setStore] = useState(category.store);
   const [stores, setStores] = useState<defType[]>([]);
-  const [counter, setCounter] = useState(1);
+  const [counter, setCounter] = useState(category.counter);
 
   const [storeList, setStoreList] = useState<string[]>(category.storeList || []);
 
