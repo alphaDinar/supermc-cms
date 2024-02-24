@@ -17,25 +17,33 @@ interface Branch extends Record<string, any> { };
 const BranchMenu = ({ searchParams }: { searchParams: { branch: string, stores: string } }) => {
   const branch = JSON.parse(searchParams.branch);
   const store = JSON.parse(searchParams.stores).find((el: Branch) => el.id === branch.storeId);
-  const fullCategoryList: string[] = store.categoryList;
-  const [categoryList, setCategoryList] = useState<string[]>(store.categoryList);
-
+  const [fullCategoryList, setFullCategoryList] = useState<string[]>([]);
+  const [categoryList, setCategoryList] = useState<string[]>([]);
 
   const [fullFoodsList, setFullFoodsList] = useState<Branch[]>([]);
   const [foods, setFoods] = useState<Branch[]>([]);
-  const [storeList, setStoreList] = useState<Branch[]>([]);
-  const [category, setCategory] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const getCategories = async () => {
+      const catQuery = collection(fireStoreDB, 'Categories/');
+      const catTemp = await getDocs(catQuery);
+      const storeCat: Branch[] = catTemp.docs.filter((cat) => cat.data().storeList.includes(branch.storeId))
+      setFullCategoryList(storeCat.map((el) => el.id));
+      setCategoryList(storeCat.map((el) => el.id));
+      setIsLoading(false);
+    }
+
     const getFoods = async () => {
       const foodQuery = query(collection(fireStoreDB, 'Foods/'), where('branch', '==', branch.id));
       const foodsTemp = await getDocs(foodQuery);
       setFullFoodsList(foodsTemp.docs.map((food) => ({ id: food.id, ...food.data() })));
-      console.log(foodsTemp.docs.map((food) => ({ id: food.id, ...food.data() })));
       setFoods(foodsTemp.docs.map((food) => ({ id: food.id, ...food.data() })));
     }
+
+    getCategories();
     getFoods();
-  }, [branch.id])
+  }, [branch.id, branch.storeId])
 
   const selectFilter = (val: string) => {
     if (val === 'all') {
@@ -79,7 +87,7 @@ const BranchMenu = ({ searchParams }: { searchParams: { branch: string, stores: 
           <IoFastFoodOutline />
         </Link>
 
-        {Object.keys(branch).length > 0 ?
+        {!isLoading ?
           <section className='segmentBox'>
             {categoryList.map((category: string, i: number) => (
               foods.filter((food) => food.category.toLowerCase() === category.toLowerCase()).length > 0 &&
