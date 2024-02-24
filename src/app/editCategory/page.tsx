@@ -11,42 +11,29 @@ import { MdArrowBack } from "react-icons/md";
 
 
 interface defType extends Record<string, any> { };
-const EditCategory = ({ searchParams }: { searchParams: { cid: string } }) => {
+const EditCategory = ({ searchParams }: { searchParams: { category: string } }) => {
   const router = useRouter();
-  const [name, setName] = useState('');
+  const category = JSON.parse(searchParams.category);
+
+  const [name, setName] = useState(category.name);
 
   const [image, setImage] = useState<Blob>(new Blob);
   const [imageInfo, setImageInfo] = useState<defType>({});
-  const [imagePreview, setImagePreview] = useState('');
-
-  const [bigImage, setBigImage] = useState<Blob>(new Blob);
-  const [bigImageInfo, setBigImageInfo] = useState<defType>({});
-  const [bigImagePreview, setBigImagePreview] = useState('');
+  const [imagePreview, setImagePreview] = useState(category.img);
 
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    setIsLoading(true);
-    getDoc(doc(fireStoreDB, 'Categories/' + searchParams.cid))
-      .then((categoryObj) => {
-        if (categoryObj.exists()) {
-          const category = categoryObj.data();
-          setName(category.name);
-          setImagePreview(category.img);
-          setBigImagePreview(category.bigImg);
-          setIsLoading(false);
-        }
-      });
-  }, [searchParams.cid])
+  // useEffect(() => {
+  //   setIsLoading(true);
+  // }, [])
 
 
   const editCategory = async () => {
     setIsLoading(true);
-    const edit = async (url: string, bigUrl: string, stamp: number) => {
+    const edit = async (url: string, stamp: number) => {
       await setDoc(doc(fireStoreDB, 'Categories/' + name), {
         name: name,
         img: url,
-        bigImg: bigUrl,
         timestamp: stamp
       })
         .then(() => {
@@ -55,59 +42,30 @@ const EditCategory = ({ searchParams }: { searchParams: { cid: string } }) => {
         })
     }
 
-    let url = imagePreview;
-    let bigUrl = bigImagePreview;
     const stamp = new Date().getTime();
-
-    const fixImage = async () => {
-      if (imageInfo.size) {
-        if (imageInfo.size > 150000) {
-          setIsLoading(false);
-          alert(`Thumbnail(big) size is ${imageInfo.size / 1000}kb, reduce to max of 150kb`);
-        } else {
-          await uploadBytes(storageRef(storageDB, 'Categories/' + `${bigImageInfo.name}${stamp}`), image)
-            .then((res) => {
-              getDownloadURL(res.ref)
-                .then((resUrl) => {
-                  return resUrl;
-                })
-            })
-        }
+    if (imageInfo.size) {
+      if (imageInfo.size > 150000) {
+        setIsLoading(false);
+        alert(`Thumbnail size is ${imageInfo.size / 1000}kb, reduce to max of 150kb`);
       } else {
-        return url;
+        await uploadBytes(storageRef(storageDB, 'Categories/' + `${imageInfo.name}${stamp}`), image)
+          .then((res) => {
+            getDownloadURL(res.ref)
+              .then((resUrl) => {
+                edit(resUrl, stamp);
+              })
+          })
       }
+    } else {
+      edit(imagePreview, stamp);
     }
-
-    const fixBigImage = async () => {
-      if (bigImageInfo.size) {
-        if (bigImageInfo.size > 150000) {
-          setIsLoading(false);
-          alert(`Thumbnail(big) size is ${imageInfo.size / 1000}kb, reduce to max of 150kb`);
-        } else {
-          await uploadBytes(storageRef(storageDB, 'Categories/' + `${bigImageInfo.name}${stamp}`), bigImage)
-            .then((bigRes) => {
-              getDownloadURL(bigRes.ref)
-                .then((bigUrlRes) => {
-                  return bigUrlRes;
-                })
-            })
-        }
-      }else{
-        return bigUrl;
-      }
-    }
-
-    await fixImage;
-    await fixBigImage;
-
-    console.log('sorted');
   }
 
   const deleteCategory = () => {
-    const ask = confirm(`Are you sure you want to delete ${searchParams.cid}`);
+    const ask = confirm(`Are you sure you want to delete ${category.id}`);
     if (ask) {
       setIsLoading(true);
-      deleteDoc(doc(fireStoreDB, 'Categories/' + searchParams.cid))
+      deleteDoc(doc(fireStoreDB, 'Categories/' + category.id))
         .then(() => {
           router.back();
         })
@@ -135,22 +93,13 @@ const EditCategory = ({ searchParams }: { searchParams: { cid: string } }) => {
               <input type="text" value={name} readOnly onChange={(e) => { setName(e.target.value) }} required />
             </div>
             <div>
-              <span>Thumbnail (Big) *</span>
-              <label htmlFor="addBigImage">
-                Add Thumbnail (Big)
-                <input id="addBigImage" type="file" onChange={(e) => { setBigImage(e.target.files![0]), setBigImageInfo(e.target.files![0]), setBigImagePreview(URL.createObjectURL(e.target.files![0])) }} />
-              </label>
-            </div>
-            <div className="storePreviewBox" style={{ backgroundImage: `url(${bigImagePreview})` }}></div>
-
-            <div>
-              <span>Thumbnail (Small) *</span>
+              <span>Thumbnail *</span>
               <label htmlFor="addImage">
-                Add Thumbnail (Small)
+                Add Thumbnail
                 <input id="addImage" type="file" onChange={(e) => { setImage(e.target.files![0]), setImageInfo(e.target.files![0]), setImagePreview(URL.createObjectURL(e.target.files![0])) }} />
               </label>
             </div>
-            <div className="categoryPreviewBox" style={{ backgroundImage: `url(${imagePreview})` }}></div>
+            <div className="storePreviewBox" style={{ backgroundImage: `url(${imagePreview})` }}></div>
             <button type="submit">Edit Category</button>
           </form>
         }

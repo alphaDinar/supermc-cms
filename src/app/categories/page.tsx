@@ -56,14 +56,11 @@ const Categories = () => {
                   <div className="category" key={i}>
                     <article>
                       <div className="imgBoxBig">
-                        <Image alt="" fill sizes="1" src={category.bigImg} />
-                      </div>
-                      <div className="imgBox">
                         <Image alt="" fill sizes="1" src={category.img} />
                       </div>
                     </article>
                     <strong>{category.name}</strong>
-                    <Link href={{ pathname: '/editCategory', query: { cid: category.id } }}>
+                    <Link href={{ pathname: '/editCategory', query: { category: JSON.stringify(category) } }}>
                       <MdEdit />
                     </Link>
                   </div>

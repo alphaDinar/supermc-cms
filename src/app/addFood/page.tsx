@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import { MdAdd, MdArrowBack, MdDeleteOutline } from "react-icons/md";
 
 interface Shot extends Record<string, any> { };
-
 const AddFood = ({ searchParams }: { searchParams: { bid: string } }) => {
   const router = useRouter();
   const [name, setName] = useState<string>('');
@@ -23,7 +22,7 @@ const AddFood = ({ searchParams }: { searchParams: { bid: string } }) => {
   const [imageInfo, setImageInfo] = useState<Shot>({});
   const [imagePreview, setImagePreview] = useState('');
 
-  const [branches, setBranches] = useState<string[]>([]);
+  const [branches, setBranches] = useState<Shot[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
 
   const [type, setType] = useState<string>('');
@@ -52,11 +51,7 @@ const AddFood = ({ searchParams }: { searchParams: { bid: string } }) => {
   useEffect(() => {
     getDocs(collection(fireStoreDB, 'Branches/'))
       .then((res) => {
-        setBranches(res.docs.map((doc) => doc.id));
-        // if(bid){
-        //   console.log('king');
-        //   setBranch(bid);
-        // }
+        setBranches(res.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       })
     getDocs(collection(fireStoreDB, 'Categories/'))
       .then((res) => {
@@ -232,7 +227,7 @@ const AddFood = ({ searchParams }: { searchParams: { bid: string } }) => {
                   <select value={branch} onChange={(e) => { setBranch(e.target.value) }}>
                     <option hidden>Choose Branch</option>
                     {branches.map((el, i) => (
-                      <option value={el} key={i}>{el}</option>
+                      <option value={el.id} key={i}>{el.key}</option>
                     ))}
                   </select>
                 </div>

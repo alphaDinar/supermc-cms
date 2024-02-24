@@ -19,24 +19,18 @@ const AddCategory = () => {
   const [imageInfo, setImageInfo] = useState<defType>({});
   const [imagePreview, setImagePreview] = useState('');
 
-  const [bigImage, setBigImage] = useState<Blob>(new Blob);
-  const [bigImageInfo, setBigImageInfo] = useState<defType>({});
-  const [bigImagePreview, setBigImagePreview] = useState('');
-
   const [isLoading, setIsLoading] = useState(false);
 
   const clearForm = () => {
     setName('');
     setImagePreview('');
-    setBigImagePreview('');
   }
 
   const createCategory = () => {
-    const add = (url: string, bigUrl: string, stamp: number) => {
+    const add = (url: string, stamp: number) => {
       setDoc(doc(fireStoreDB, 'Categories/' + name), {
         name: name,
         img: url,
-        bigImg: bigUrl,
         timestamp: stamp
       })
         .then(() => {
@@ -46,7 +40,7 @@ const AddCategory = () => {
         })
     }
 
-    if (imageInfo.size > 150000 || bigImageInfo.size > 150000) {
+    if (imageInfo.size > 150000) {
       alert(`image size is ${imageInfo.size / 1000}kb, reduce to max of 150kb`);
     } else {
       const stamp = new Date().getTime();
@@ -54,16 +48,7 @@ const AddCategory = () => {
       uploadBytes(storageRef(storageDB, 'Stores/' + `${imageInfo.name}${stamp}`), image)
         .then((res) => {
           getDownloadURL(res.ref)
-            .then((url) => {
-              uploadBytes(storageRef(storageDB, 'Stores/' + `${bigImageInfo.name}${stamp}`), bigImage)
-                .then((bigRes) => {
-                  getDownloadURL(bigRes.ref)
-                    .then((bigUrl) => {
-                      add(url, bigUrl, stamp)
-                    }
-                    )
-                })
-            }
+            .then((url) => add(url, stamp)
             )
         })
     }
@@ -88,14 +73,6 @@ const AddCategory = () => {
               <span>Name *</span>
               <input type="text" value={name} onChange={(e) => { setName(e.target.value) }} required />
             </div>
-            <div>
-              <span>Thumbnail (Big) *</span>
-              <label htmlFor="addBigImage">
-                Add Thumbnail (Big)
-                <input id="addBigImage" type="file" onChange={(e) => { setBigImage(e.target.files![0]), setBigImageInfo(e.target.files![0]), setBigImagePreview(URL.createObjectURL(e.target.files![0])) }} required />
-              </label>
-            </div>
-            <div className="storePreviewBox" style={{ backgroundImage: `url(${bigImagePreview})` }}></div>
 
             <div>
               <span>Thumbnail (Small) *</span>

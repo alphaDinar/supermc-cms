@@ -10,95 +10,58 @@ import { useEffect, useState } from "react";
 import { MdAdd, MdArrowBack, MdDeleteOutline } from "react-icons/md";
 
 interface Shot extends Record<string, any> { };
-
-const EditFood = ({ searchParams }: { searchParams: { fid: string } }) => {
+const EditFood = ({ searchParams }: { searchParams: { food: string } }) => {
   const router = useRouter();
-  const [name, setName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [branch, setBranch] = useState<string>('');
-  const [category, setCategory] = useState<string>('');
-  const [duration, setDuration] = useState<string>('0');
+  const food = JSON.parse(searchParams.food);
+
+  const [name, setName] = useState(food.name);
+  const [description, setDescription] = useState(food.description);
+  const [branch, setBranch] = useState(food.branch);
+  const [category, setCategory] = useState(food.category);
+  const [duration, setDuration] = useState(food.duration);
 
   const [image, setImage] = useState<Blob>(new Blob);
   const [imageInfo, setImageInfo] = useState<Shot>({});
-  const [oldImagePreview, setOldImagePreview] = useState('');
-  const [imagePreview, setImagePreview] = useState('');
+  const [oldImagePreview, setOldImagePreview] = useState(food.img);
+  const [imagePreview, setImagePreview] = useState(food.img);
 
-  const [branches, setBranches] = useState<string[]>([]);
+  const [branches, setBranches] = useState<Shot[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
 
-  const [type, setType] = useState<string>('');
-  const [activateGroupType, setActivateGroupType] = useState<boolean>(false);
-  const [groupType, setGroupType] = useState<string>('sizes');
+  const [type, setType] = useState(food.type);
+  const [activateGroupType, setActivateGroupType] = useState<boolean>(food.type === 'grouped' ? true : false);
+  const [groupType, setGroupType] = useState(food.groupType);
 
-  const [price, setPrice] = useState<string>('0');
+  const [price, setPrice] = useState(food.price);
 
-  const sizeList = ['Small', 'Medium', 'Large', 'XLarge', 'XXLarge'];
-  const pieceList = ['3pcs', '6pcs', '9pcs', '12pcs', '20pcs'];
-  const [priceList, setPriceList] = useState<string[]>(['', '', '', '', '']);
+  const sizeList = ['Small', 'Medium', 'Large', 'XLarge', 'XXLarge', 'Huge', 'XHuge'];
+  const pieceList = ['2pcs', '3pcs', '6pcs', '9pcs', '10pcs', '12pcs', '20pcs'];
+  const [priceList, setPriceList] = useState<string[]>(food.sizes.map((el: Shot) => el.price));
 
-  const [ingredient, setIngredient] = useState<string>('');
+  const [ingredient, setIngredient] = useState('');
 
-  const [ingredientList, setIngredientList] = useState<string[]>([]);
-  const [ingredientOptionList, setIngredientOptionList] = useState<string[]>([]);
+  const [ingredientList, setIngredientList] = useState<string[]>(food.ingredientList.map((el: Shot) => el.name));
+  const [ingredientOptionList, setIngredientOptionList] = useState<string[]>(food.ingredientList.map((el: Shot) => el.optional));
 
-  const [extra, setExtra] = useState<string>('');
-  const [extraPrice, setExtraPrice] = useState<string>('0');
+  const [extra, setExtra] = useState('');
+  const [extraPrice, setExtraPrice] = useState('0');
 
-  const [extraList, setExtraList] = useState<string[]>([]);
-  const [extraPriceList, setExtraPriceList] = useState<string[]>([]);
+  const [extraList, setExtraList] = useState<string[]>(food.extraList.map((el: Shot) => el.name));
+  const [extraPriceList, setExtraPriceList] = useState<string[]>(food.extraList.map((el: Shot) => el.price));
   const [isLoading, setIsLoading] = useState(true);
-
-
-  const updateForm = (fid: string) => {
-    getDoc(doc(fireStoreDB, 'Foods/' + fid))
-      .then((foodObj) => {
-        if (foodObj.exists()) {
-          const food = foodObj.data();
-          setName(food.name);
-          setDescription(food.description);
-          setBranch(food.branch);
-          setCategory(food.category);
-          setDuration(food.duration);
-          setImage(new Blob);
-          setImageInfo({});
-          setOldImagePreview(food.img);
-          setImagePreview(food.img);
-          setType(food.type);
-          setGroupType(food.groupType);
-          if (food.type == 'grouped') {
-            setActivateGroupType(true);
-          } else {
-            setActivateGroupType(false);
-          }
-          setPrice(food.price);
-          setIngredientList(food.ingredientList.map((el: Shot) => el.name));
-          setIngredientOptionList(food.ingredientList.map((el: Shot) => el.optional));
-          setExtraList(food.extraList.map((el: Shot) => el.name));
-          setExtraPriceList(food.extraList.map((el: Shot) => el.price));
-          setPriceList(food.sizes.map((el: Shot) => el.price))
-          setIsLoading(false);
-        }
-      })
-  }
 
   useEffect(() => {
     getDocs(collection(fireStoreDB, 'Branches/'))
       .then((res) => {
-        setBranches(res.docs.map((doc) => doc.id));
+        setBranches(res.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       })
     getDocs(collection(fireStoreDB, 'Categories/'))
       .then((res) => {
         setCategories(res.docs.map((doc) => doc.id));
+        setCategory(food.category);
+        setIsLoading(false);
       })
-
-    updateForm(searchParams.fid);
-  })
-
-  const resetForm = () => {
-    setName('');
-    setImagePreview('');
-  }
+  }, [food.category])
 
   const handleGroupType = (val: string) => {
     if (val === 'grouped') {
@@ -141,9 +104,9 @@ const EditFood = ({ searchParams }: { searchParams: { fid: string } }) => {
         })
       }
 
-      createFood(finalSizeList, finalIngredientList, finalExtraList);
+      updateFood(finalSizeList, finalIngredientList, finalExtraList);
     } else {
-      createFood([], finalIngredientList, finalExtraList);
+      updateFood([], finalIngredientList, finalExtraList);
     }
   }
 
@@ -174,9 +137,9 @@ const EditFood = ({ searchParams }: { searchParams: { fid: string } }) => {
   }
 
 
-  const createFood = (finalSizeList: Shot[], finalIngredientList: Shot[], finalExtraList: Shot[]) => {
+  const updateFood = (finalSizeList: Shot[], finalIngredientList: Shot[], finalExtraList: Shot[]) => {
     const edit = (url: string) => {
-      updateDoc(doc(fireStoreDB, 'Foods/' + searchParams.fid), {
+      updateDoc(doc(fireStoreDB, 'Foods/' + food.id), {
         name: name,
         price: price,
         type: type,
@@ -190,7 +153,7 @@ const EditFood = ({ searchParams }: { searchParams: { fid: string } }) => {
         extraList: finalExtraList,
         img: url,
       }).then(() => {
-        updateForm(searchParams.fid);
+        router.back();
         setIsLoading(false);
       })
     }
@@ -220,7 +183,7 @@ const EditFood = ({ searchParams }: { searchParams: { fid: string } }) => {
     const ask = confirm(`Are you sure you want to delete ${name}`);
     if (ask) {
       setIsLoading(true);
-      deleteDoc(doc(fireStoreDB, 'Foods/' + searchParams.fid))
+      deleteDoc(doc(fireStoreDB, 'Foods/' + food.id))
         .then(() => {
           router.push(`/branchMenu/${branch}`);
         })
@@ -230,8 +193,6 @@ const EditFood = ({ searchParams }: { searchParams: { fid: string } }) => {
   return (
     <main>
       <Sidebar />
-
-
       <Screen>
         <section className={'formHeader'}>
           <p>
@@ -245,155 +206,153 @@ const EditFood = ({ searchParams }: { searchParams: { fid: string } }) => {
           isLoading ?
             <Loader />
             :
-            branches.length > 0 ?
-              <form onSubmit={(e) => { e.preventDefault(), fixSizeList() }}>
-                <div>
-                  <span>Name *</span>
-                  <input type="text" value={name} onChange={(e) => { setName(e.target.value) }} required />
-                </div>
+            <form onSubmit={(e) => { e.preventDefault(), fixSizeList() }}>
+              <div>
+                <span>Name *</span>
+                <input type="text" value={name} onChange={(e) => { setName(e.target.value) }} required />
+              </div>
 
-                <div>
-                  <span>Description</span>
-                  <textarea value={description} onChange={(e) => { setDescription(e.target.value) }}></textarea>
-                </div>
+              <div>
+                <span>Description</span>
+                <textarea value={description} onChange={(e) => { setDescription(e.target.value) }}></textarea>
+              </div>
 
+              <div>
+                <span>Branch *</span>
+                <select value={branch} onChange={(e) => { setBranch(e.target.value) }}>
+                  <option hidden>Choose Branch</option>
+                  {branches.map((el, i) => (
+                    <option value={el.id} key={i}>{el.key}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <span>Category *</span>
+                <select value={category} onChange={(e) => { setCategory(e.target.value) }}>
+                  <option hidden>Choose Category</option>
+                  {categories.map((el, i) => (
+                    <option value={el} key={i}>{el}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <span>Time to cook *</span>
+                <input type="number" value={duration} onChange={(e) => { setDuration(e.target.value) }} placeholder="minutes" />
+              </div>
+
+              <div>
+                <span>Add ingredients (optional to customer or not)</span>
+                <p>
+                  <input type="text" value={ingredient} onChange={(e) => { setIngredient(e.target.value) }} />
+                  <legend onClick={addIngredient}><MdAdd /></legend>
+                </p>
+
+                <ul>
+                  {ingredientList.map((el, i) => (
+                    <li key={i}>
+                      <sub>#{i + 1}</sub>
+                      <span>{el}</span>
+                      <select onChange={(e) => { ingredientOptionList[i] = e.target.value }}>
+                        <option value="no">no</option>
+                        <option value="yes">yes</option>
+                      </select>
+                      <sup onClick={() => { removeIngredient(el) }}><MdDeleteOutline /></sup>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+
+              <div>
+                <span>Add Extras (with 0 or extra charges)</span>
+                <p>
+                  <input type="text" value={extra} onChange={(e) => { setExtra(e.target.value) }} />
+                  <legend onClick={addExtra}><MdAdd /></legend>
+                </p>
+
+                <ul>
+                  {extraList.map((el, i) => (
+                    <li key={i}>
+                      <sub>#{i + 1}</sub>
+                      <span>{el}</span>
+                      <input type="number" style={{ maxWidth: '80px' }} value={extraPriceList[i]} onChange={(e) => {
+                        const extraPriceListTemp = [...extraPriceList];
+                        extraPriceListTemp[i] = e.target.value;
+                        setExtraPriceList(extraPriceListTemp);
+                      }} />
+                      <sup onClick={() => { removeExtra(el) }}><MdDeleteOutline /></sup>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <span>Type *</span>
+                <select value={type} onChange={(e) => { setType(e.target.value); handleGroupType(e.target.value) }}>
+                  <option hidden>Select Type</option>
+                  <option value="single">Single</option>
+                  <option value="grouped">Grouped</option>
+                  <option value="special">Special</option>
+                </select>
+              </div>
+
+              {activateGroupType &&
                 <div>
-                  <span>Branch *</span>
-                  <select value={branch} onChange={(e) => { setBranch(e.target.value) }}>
-                    <option hidden>Choose Branch</option>
-                    {branches.map((el, i) => (
-                      <option value={el} key={i}>{el}</option>
-                    ))}
+                  <span>Group type *</span>
+                  <select value={groupType} onChange={(e) => { setGroupType(e.target.value) }}>
+                    <option value="sizes">Sizes</option>
+                    <option value="pieces">Pieces</option>
                   </select>
                 </div>
+              }
 
-                <div>
-                  <span>Category *</span>
-                  <select onChange={(e) => { setCategory(e.target.value) }}>
-                    <option hidden>Choose Category</option>
-                    {categories.map((el, i) => (
-                      <option value={el} key={i}>{el}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <span>Time to cook *</span>
-                  <input type="number" value={duration} onChange={(e) => { setDuration(e.target.value) }} placeholder="minutes" />
-                </div>
-
-                <div>
-                  <span>Add ingredients (optional to customer or not)</span>
-                  <p>
-                    <input type="text" value={ingredient} onChange={(e) => { setIngredient(e.target.value) }} />
-                    <legend onClick={addIngredient}><MdAdd /></legend>
-                  </p>
-
-                  <ul>
-                    {ingredientList.map((el, i) => (
-                      <li key={i}>
-                        <sub>#{i + 1}</sub>
-                        <span>{el}</span>
-                        <select onChange={(e) => { ingredientOptionList[i] = e.target.value }}>
-                          <option value="no">no</option>
-                          <option value="yes">yes</option>
-                        </select>
-                        <sup onClick={() => { removeIngredient(el) }}><MdDeleteOutline /></sup>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-
-                <div>
-                  <span>Add Extras (with 0 or extra charges)</span>
-                  <p>
-                    <input type="text" value={extra} onChange={(e) => { setExtra(e.target.value) }} />
-                    <legend onClick={addExtra}><MdAdd /></legend>
-                  </p>
-
-                  <ul>
-                    {extraList.map((el, i) => (
-                      <li key={i}>
-                        <sub>#{i + 1}</sub>
-                        <span>{el}</span>
-                        <input type="number" style={{ maxWidth: '80px' }} value={extraPriceList[i]} onChange={(e) => {
-                          const extraPriceListTemp = [...extraPriceList];
-                          extraPriceListTemp[i] = e.target.value;
-                          setExtraPriceList(extraPriceListTemp);
-                        }} />
-                        <sup onClick={() => { removeExtra(el) }}><MdDeleteOutline /></sup>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <span>Type *</span>
-                  <select value={type} onChange={(e) => { setType(e.target.value); handleGroupType(e.target.value) }}>
-                    <option hidden>Select Type</option>
-                    <option value="single">Single</option>
-                    <option value="grouped">Grouped</option>
-                    <option value="special">Special</option>
-                  </select>
-                </div>
-
-                {activateGroupType &&
-                  <div>
-                    <span>Group type *</span>
-                    <select value={groupType} onChange={(e) => { setGroupType(e.target.value) }}>
-                      <option value="sizes">Sizes</option>
-                      <option value="pieces">Pieces</option>
-                    </select>
-                  </div>
-                }
-
-                {activateGroupType ?
-                  groupType !== 'pieces' ?
-                    <div className="sizeBox">
-                      <span>Size and Price</span>
-                      <article>
-                        {sizeList.map((el, i) => (
-                          <h4 key={i}>
-                            <span style={{ background: 'salmon', color: 'white' }}>{el}</span>
-                            <input type="number" name="" value={priceList[i]} onChange={(e) => { handlePriceList(e.target.value, i) }} />
-                            {/* <small onClick={() => { removeSize(el.tag) }}>
+              {activateGroupType ?
+                groupType !== 'pieces' ?
+                  <div className="sizeBox">
+                    <span>Size and Price</span>
+                    <article>
+                      {sizeList.map((el, i) => (
+                        <h4 key={i}>
+                          <span style={{ background: 'salmon', color: 'white' }}>{el}</span>
+                          <input type="number" name="" value={priceList[i]} onChange={(e) => { handlePriceList(e.target.value, i) }} />
+                          {/* <small onClick={() => { removeSize(el.tag) }}>
               </small> */}
-                          </h4>
-                        ))}
-                      </article>
-                    </div> :
-                    <div className="sizeBox">
-                      <span>No. of Pieces and Price</span>
-                      <article>
-                        {pieceList.map((el, i) => (
-                          <h4 key={i}>
-                            <span style={{ background: 'salmon', color: 'white' }}>{el}</span>
-                            <input type="number" name="" value={priceList[i]} onChange={(e) => { handlePriceList(e.target.value, i) }} />
-                            {/* <small onClick={() => { removeSize(el.tag) }}>
+                        </h4>
+                      ))}
+                    </article>
+                  </div> :
+                  <div className="sizeBox">
+                    <span>No. of Pieces and Price</span>
+                    <article>
+                      {pieceList.map((el, i) => (
+                        <h4 key={i}>
+                          <span style={{ background: 'salmon', color: 'white' }}>{el}</span>
+                          <input type="number" name="" value={priceList[i]} onChange={(e) => { handlePriceList(e.target.value, i) }} />
+                          {/* <small onClick={() => { removeSize(el.tag) }}>
               </small> */}
-                          </h4>
-                        ))}
-                      </article>
-                    </div>
-                  :
-                  <div>
-                    <span>Price</span>
-                    <input type="number" value={price} onChange={(e) => { setPrice(e.target.value) }} />
+                        </h4>
+                      ))}
+                    </article>
                   </div>
-                }
+                :
                 <div>
-                  <span>Image *</span>
-                  <label htmlFor="addImage">
-                    Add Image
-                    <input id="addImage" type="file" onChange={(e) => { setImage(e.target.files![0]), setImageInfo(e.target.files![0]), setImagePreview(URL.createObjectURL(e.target.files![0])) }} />
-                  </label>
+                  <span>Price</span>
+                  <input type="number" value={price} onChange={(e) => { setPrice(e.target.value) }} />
                 </div>
+              }
+              <div>
+                <span>Image *</span>
+                <label htmlFor="addImage">
+                  Add Image
+                  <input id="addImage" type="file" onChange={(e) => { setImage(e.target.files![0]), setImageInfo(e.target.files![0]), setImagePreview(URL.createObjectURL(e.target.files![0])) }} />
+                </label>
+              </div>
 
-                <div className="storePreviewBox" style={{ backgroundImage: `url(${imagePreview})` }}></div>
+              <div className="storePreviewBox" style={{ backgroundImage: `url(${imagePreview})` }}></div>
 
-                <button type="submit">Update Food</button>
-              </form>
-              : <Loader />
+              <button type="submit">Update Food</button>
+            </form>
         }
       </Screen>
     </main>

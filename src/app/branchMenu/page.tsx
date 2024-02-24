@@ -17,7 +17,7 @@ interface Branch extends Record<string, any> { };
 const BranchMenu = ({ searchParams }: { searchParams: { branch: string, stores: string } }) => {
   const branch = JSON.parse(searchParams.branch);
   const store = JSON.parse(searchParams.stores).find((el: Branch) => el.id === branch.storeId);
-  const fullCategoryList : string[] = store.categoryList;
+  const fullCategoryList: string[] = store.categoryList;
   const [categoryList, setCategoryList] = useState<string[]>(store.categoryList);
 
 
@@ -100,7 +100,7 @@ const BranchMenu = ({ searchParams }: { searchParams: { branch: string, stores: 
                           }
                         </p>
                         <nav>
-                          <Link href={{ pathname: '/editFood', query: { fid: food.id } }}>
+                          <Link href={{ pathname: '/editFood', query: { food: JSON.stringify(food) } }}>
                             <MdEdit />
                           </Link>
                         </nav>
