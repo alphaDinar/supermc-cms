@@ -33,7 +33,7 @@ const AddFood = ({ searchParams }: { searchParams: { bid: string } }) => {
 
   const sizeList = ['Small', 'Medium', 'Large', 'XLarge', 'XXLarge', 'Huge', 'XHuge', 'XXHuge'];
   const pieceList = ['2pcs', '3pcs', '5pcs', '6pcs', '9pcs', '10pcs', '12pcs', '20pcs'];
-  const [priceList, setPriceList] = useState<string[]>(['', '', '', '', '']);
+  const [priceList, setPriceList] = useState<string[]>(['', '', '', '', '','','','']);
 
   const [ingredient, setIngredient] = useState<string>('');
 
